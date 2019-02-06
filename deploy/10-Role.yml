@@ -1,0 +1,12 @@
+# https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: backup-runner
+rules:
+- apiGroups: ["extensions", "apps",]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch", "update"]
+- apiGroup: ["extensions", "batch"]
+  resources: ["jobs"]
+  verbs: ["get", "list", "watch", "create"]
