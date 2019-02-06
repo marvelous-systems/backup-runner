@@ -31,8 +31,8 @@ operations.add_argument("-r", "--snapshot", type=str, nargs="+",
                     help="Perform a restore of the given snapshots")
 
 if __name__ == "__main__":
-    log = logger.get(__name__)
     args = parser.parse_args()
+    log = logger.get(__name__)
 
     log.debug("Backup runner started.")
 
@@ -40,6 +40,5 @@ if __name__ == "__main__":
         log.debug("Running inside cluster")
         config.load_incluster_config()
     else:
-        log.debug("Running outside of cluster")
+        log.info("Running outside of cluster")
         config.load_kube_config("/kube/config")
-
