@@ -31,7 +31,7 @@ operations.add_argument("-r", "--snapshot", type=str, nargs="+",
                     help="Perform a restore of the given snapshots")
 
 if __name__ == "__main__":
-    log = logger.get()
+    log = logger.get(__name__)
     args = parser.parse_args()
 
     log.debug("Backup runner started.")

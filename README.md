@@ -30,10 +30,17 @@ $ docker build -t backup-runner .
 
 # Usage
 
+## Environment
+
+| Name       | Description |
+|------------|-------------|
+|`SENTRY_DSN`|When present, errors and warnings will be sent to this sentry project.|
+
+
 ## Running locally using a kubeconfig file
 
 ```bash
-$ docker run -v ~/.kube/config:/kube/config backup-runner
+$ docker run -v ~/.kube/config:/kube/config -e environment backup-runner
 usage: main.py [-h] [-b SNAPSHOT [SNAPSHOT ...] | -r RESTORE [RESTORE ...]]
                namespace deployment store
 ```
