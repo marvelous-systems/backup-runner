@@ -1,8 +1,10 @@
 import os
 
+from mutations import scale
+
 __author__ = "Noah Hummel"
 
-from kubernetes import client, config
+from kubernetes import config
 import logger
 import argparse
 
@@ -40,5 +42,7 @@ if __name__ == "__main__":
         log.debug("Running inside cluster")
         config.load_incluster_config()
     else:
-        log.info("Running outside of cluster")
+        log.debug("Running outside of cluster")
         config.load_kube_config("/kube/config")
+
+    scale.scale_deployment(args.namespace, args.deployment, 1)
