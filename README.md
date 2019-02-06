@@ -34,6 +34,6 @@ $ docker build -t backup-runner .
 
 ```bash
 $ docker run -v ~/.kube/config:/kube/config backup-runner
-usage: main.py [-h] [-b BACKUP [BACKUP ...] | -r RESTORE [RESTORE ...]]
+usage: main.py [-h] [-b SNAPSHOT [SNAPSHOT ...] | -r RESTORE [RESTORE ...]]
                namespace deployment store
 ```

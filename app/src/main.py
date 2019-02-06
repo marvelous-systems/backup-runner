@@ -27,7 +27,7 @@ parser.add_argument(
 operations = parser.add_mutually_exclusive_group()
 operations.add_argument("-b", "--backup", type=str, nargs="+",
                     help="Perform a backup of the given paths")
-operations.add_argument("-r", "--restore", type=str, nargs="+",
+operations.add_argument("-r", "--snapshot", type=str, nargs="+",
                     help="Perform a restore of the given snapshots")
 
 if __name__ == "__main__":
