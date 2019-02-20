@@ -14,8 +14,8 @@ loggers = dict()
 _sentry_dsn = os.environ.get("SENTRY_DSN")
 if _sentry_dsn:
     sentry_logging = LoggingIntegration(
-        level=logging.DEBUG,  # Capture info and above as breadcrumbs
-        event_level=logging.WARNING  # Send errors as events
+        level=logging.DEBUG,
+        event_level=logging.WARNING
     )
     sentry_sdk.init(
         dsn=_sentry_dsn,
