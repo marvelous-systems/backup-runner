@@ -8,13 +8,15 @@ import logger
 
 log = logger.get(__name__)
 
-def scale_deployment(namespace: str, name: str, replicas: int):
+
+def scale_deployment(name: str, namespace: str, replicas: int):
     try:
         log.debug(f"Scaling deployment {name} in {namespace} to {replicas}")
         appsV1 = client.AppsV1Api()
-        original_spec = appsV1.read_namespaced_deployment(name, namespace)
-        updated_spec = client.AppsV1beta1DeploymentSpec(replicas=replicas, template=original_spec)
-        updated_deployment = client.AppsV1beta1Deployment(spec=updated_spec)
-        appsV1.patch_namespaced_deployment_scale(name, namespace, updated_deployment)
+        current_scale = appsV1.read_namespaced_deployment_scale(name, namespace)
+        current_scale.spec.replicas = replicas
+        new_scale = appsV1.patch_namespaced_deployment_scale(name, namespace,
+                                                             current_scale)
+        log.debug(f"Scaled to {new_scale.spec.replicas} replicas")
     except ApiException as e:
         sentry_sdk.capture_exception(e)
