@@ -1,12 +1,14 @@
 import os
+import argparse
 
-from mutations import scale
+from kubernetes import config, client
+
+import logger
+from mutations.scale import scale_deployment
+from views.persistentVolumeClaim import list_pvcs_for_deployment
 
 __author__ = "Noah Hummel"
 
-from kubernetes import config
-import logger
-import argparse
 
 parser = argparse.ArgumentParser(
     description="Perform an offline backup of a kubernetes deployment."
@@ -28,9 +30,9 @@ parser.add_argument(
 )
 operations = parser.add_mutually_exclusive_group()
 operations.add_argument("-b", "--backup", type=str, nargs="+",
-                    help="Perform a backup of the given paths")
+                        help="Perform a backup of the given paths")
 operations.add_argument("-r", "--snapshot", type=str, nargs="+",
-                    help="Perform a restore of the given snapshots")
+                        help="Perform a restore of the given snapshots")
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -41,8 +43,21 @@ if __name__ == "__main__":
     if os.environ.get("KUBERNETES_PORT"):
         log.debug("Running inside cluster")
         config.load_incluster_config()
+
+        with open("/var/run/secrets/kubernetes.io/serviceaccount/token") as f:
+            token = f.read()
+            log.debug(f"Using ServiceAccount token {token[:8]}...{token[-8:]}")
+        appsV1Api = client.AppsV1Api()
+        available_resources = appsV1Api.get_api_resources()
+        log.debug(f"Available resources: \n{available_resources}")
     else:
         log.debug("Running outside of cluster")
         config.load_kube_config("/kube/config")
 
-    scale.scale_deployment(args.namespace, args.deployment, 1)
+    pvcs = list_pvcs_for_deployment(args.deployment, args.namespace)
+    for pvc in pvcs:
+        log.debug(f"Deployment has PVC {pvc.metadata.name} "
+                  f"provided by {pvc.spec.storage_class_name} "
+                  f"in phase {pvc.status.phase}")
+
+    scale_deployment(args.deployment, args.namespace, 0)
