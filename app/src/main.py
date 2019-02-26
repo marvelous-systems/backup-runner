@@ -1,10 +1,12 @@
+from datetime import timedelta
+
 import os
 import argparse
 
 from kubernetes import config, client
 
 import logger
-from mutations.scale import scale_deployment
+from mutations.scale import scale_deployment_sync
 from views.persistentVolumeClaim import list_pvcs_for_deployment
 
 __author__ = "Noah Hummel"
@@ -60,4 +62,5 @@ if __name__ == "__main__":
                   f"provided by {pvc.spec.storage_class_name} "
                   f"in phase {pvc.status.phase}")
 
-    scale_deployment(args.deployment, args.namespace, 0)
+    scale_deployment_sync(args.deployment, args.namespace, 0,
+                          timedelta(minutes=2))
