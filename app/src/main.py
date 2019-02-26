@@ -6,8 +6,10 @@ import argparse
 from kubernetes import config, client
 
 import logger
-from mutations.scale import scale_deployment_sync
+from k8s import wait_for_reconciliation
+from mutations.scale import scale_deployment
 from views.persistentVolumeClaim import list_pvcs_for_deployment
+from views.pod import list_pods_for_deployment
 
 __author__ = "Noah Hummel"
 
@@ -62,5 +64,17 @@ if __name__ == "__main__":
                   f"provided by {pvc.spec.storage_class_name} "
                   f"in phase {pvc.status.phase}")
 
-    scale_deployment_sync(args.deployment, args.namespace, 0,
-                          timedelta(minutes=2))
+    pods = list_pods_for_deployment(args.deployment, args.namespace)
+    for pod in pods:
+        log.debug(f"Deployment has Pod {pod.metadata.name}")
+
+    scale_deployment(args.deployment, args.namespace, 0)
+    wait_for_reconciliation(
+        lambda xs: len(xs) == 0,
+        timedelta(minutes=1),
+        list_pods_for_deployment,
+        args.deployment,
+        args.namespace
+    )
+    pods = list_pods_for_deployment(args.deployment, args.namespace)
+    log.debug(f"Deployment has {len(pods)} Pods remaining.")
