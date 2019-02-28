@@ -11,6 +11,7 @@ from kubernetes.client.rest import ApiException
 
 import logger
 from k8s import wait_for_reconciliation_blocking
+from mutations.deployment import create_deployment
 from mutations.scale import update_deployment_scale
 from sidecar_deploy import new_backup_sidecar_deployment_with_volumes
 from views.persistentVolumeClaim import list_pvcs_for_deployment
@@ -94,7 +95,9 @@ if __name__ == "__main__":
     if args.backup:
         sidecar_deployment = new_backup_sidecar_deployment_with_volumes(
             deployment.to_dict(), args.store)
-        log.debug(yaml.dump(sidecar_deployment, default_flow_style=False))
+        sidecar = create_deployment(sidecar_deployment, args.namespace)
+        log.debug(sidecar)
+
     elif args.snapshot:
         log.warning("Restore operation is not yet implemented.")
         pass
