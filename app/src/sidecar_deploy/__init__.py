@@ -55,6 +55,7 @@ def new_backup_sidecar_deployment(backup_paths: List[str],
         _from_secret("SFTP_PATH", store_secret_name, "path"),
         _from_secret("SFTP_USER", store_secret_name, "user"),
         _from_secret("SFTP_HOST", store_secret_name, "host"),
+        _from_secret("SFTP_PORT", store_secret_name, "port"),
         _from_secret("RESTIC_PASSWORD", store_secret_name, "restic_password"),
         {
             "name": "BACKUP_PATHS",
