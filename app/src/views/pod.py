@@ -1,3 +1,4 @@
+import sentry_sdk
 from kubernetes import client
 from kubernetes.client import V1Pod, V1Deployment
 from kubernetes.client.rest import ApiException
@@ -18,9 +19,7 @@ def list_pods_for_deployment(name: str, namespace: str) -> List[V1Pod]:
                                                                    namespace)
         labels = deployment.spec.selector.match_labels
         selector = label_selector(labels)
-        podlist = core.list_namespaced_pod(namespace, label_selector=selector)
-        return podlist.items
+        pod_list = core.list_namespaced_pod(namespace, label_selector=selector)
+        return pod_list.items
     except ApiException as e:
-        log.warning(f"Could not fetch Deployment {namespace}/{name}: "
-                    f"{e.reason}")
-        return []
+        sentry_sdk.capture_exception(e)

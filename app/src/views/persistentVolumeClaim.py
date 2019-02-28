@@ -28,6 +28,7 @@ def list_pvcs_for_deployment(name: str, namespace: str) \
             if volume.persistent_volume_claim is None:
                 log.debug(f"Volume {volume.name} was not dynamically provided, "
                           f"skipping.")
+                continue
 
             claim = volume.persistent_volume_claim
             log.debug(f"Volume {volume.name} was dynamically provided for PVC "
