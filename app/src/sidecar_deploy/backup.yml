@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backup-runner  # adjust
+  labels:
+    app: backup-runner
+spec:
+  selector:
+     matchLabels:
+      app: backup-runner  # adjust
+  template:
+    metadata:
+      labels:
+        app: backup-runner  # adjust
+    spec:
+      volumes:
+        - name: ssh-key
+          secret:
+            secretName: SSH_SECRET
+      containers:
+      - name: backup-sidecar  # adjust
+        image: restic-backup-sidecar
+        volumeMounts:
+          - mountPath: "/restic/key"
+            name: ssh-key
+            readOnly: true
+            subPath: ssh_key
+# Entries below will be added by script
+#        env:
+#          - name: SFTP_PATH
+#            valueFrom:
+#              secretKeyRef:
+#                name: STORE_SECRET
+#                key: path
+#          - name: SFTP_USER
+#            valueFrom:
+#              secretKeyRef:
+#                name: STORE_SECRET
+#                key: user
+#          - name: SFTP_HOST
+#            valueFrom:
+#              secretKeyRef:
+#                name: STORE_SECRET
+#                key: host
+#          - name: SFTP_PORT
+#            valueFrom:
+#              secretKeyRef:
+#                name: STORE_SECRET
+#                key: PORT
+#          - name: RESTIC_PASSWORD
+#            valueFrom:
+#              secretKeyRef:
+#                name: STORE_SECRET
+#                key: restic_password
+#          - name: BACKUP_PATHS
+#            value: BACKUP_PATHS
