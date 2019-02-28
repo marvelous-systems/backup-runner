@@ -17,14 +17,17 @@ spec:
         - name: ssh-key
           secret:
             secretName: SSH_SECRET
+            defaultMode: 256
+            items:
+              - key: ssh_key
+                path: key
       containers:
       - name: backup-sidecar  # adjust
-        image: restic-backup-sidecar
+        image: "marsy/restic-backup-sidecar"
         volumeMounts:
-          - mountPath: "/restic/key"
+          - mountPath: "/ssh/"
             name: ssh-key
             readOnly: true
-            subPath: ssh_key
 # Entries below will be added by script
 #        env:
 #          - name: SFTP_PATH
